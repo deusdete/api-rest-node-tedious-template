@@ -1,0 +1,25 @@
+{
+  "name": "api-template",
+  "version": "1.0.0",
+  "description": "API REST usanado Nodejs e SQL Server",
+  "main": "index.js",
+  "author": "Deusdete Ferreira",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "consolidate": "^0.15.1",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.3",
+    "express": "^4.17.1",
+    "nodemailer": "^6.4.11",
+    "tedious": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

@@ -1,0 +1,98 @@
+const Request = require('tedious').Request;
+const connection = require('./connect');
+const utility = require('./utility/utility');
+
+function spGetExecute(qry, callback) {
+    const data = [];
+    const dataset = [];
+    const resultset = 0;
+    request = new Request(qry, function (err, rowCount) {
+        utility.sendDbResponse(err, rowCount, dataset, callback);
+
+    });
+
+    request.on('row', function (columns) {
+        utility.buildRow(columns, data);
+
+    });
+
+    request.on('doneInProc', function (rowCount, more, rows) {
+        dataset.push(data);
+        data = [];
+    });
+
+    connection.callProcedure(request);
+}
+
+function spPostExecute(qry, params, callback) {
+    const newdata = [];
+
+    request = new Request(qry, function (err, rowCount) {
+        utility.sendDbResponse(err, rowCount, newdata, callback);
+    });
+
+    params.forEach(param => {
+
+        request.addParameter(param.name, param.type, param.val);
+
+    });
+
+    request.on('row', function (columns) {
+        utility.buildRow(columns, newdata);
+    });
+
+    connection.callProcedure(request);
+}
+
+function queryGetExecute(qry, params, isMultiSet, callback) {
+    let data = [];
+    let dataset = [];
+    let resultset = 0;
+
+    request = new Request(qry, function (err, rowCount) {
+        utility.sendDbResponse(err, rowCount, dataset, callback);
+
+    });
+
+    params.forEach(param => {
+        request.addParameter(param.name, param.type, param.val);
+    });
+
+    request.on('row', function (columns) {
+        utility.buildRow(columns, data);
+    });
+
+    request.on('doneInProc', function (rowCount, more, rows) {
+        if (isMultiSet == false) {
+            dataset = data;
+        } else {
+            dataset.push(data);
+            data = [];
+        }
+    });
+
+    connection.execSql(request);
+}
+
+function queryExecute(qry, params, isMultiSet, callback) {
+    const data = [];
+    const dataset = [];
+    const resultset = 0;
+
+    request = new Request(qry, function (err, rowCount) {
+        utility.sendDbResponse(err, rowCount, dataset, callback);
+    });
+
+    params.forEach(param => {
+        request.addParameter(param.name, param.type, param.val);
+    });
+
+
+    connection.execSql(request);
+}
+
+module.exports = {
+    get: spGetExecute,
+    post: spPostExecute,
+    getQuery: queryGetExecute
+};
