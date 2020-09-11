@@ -1,5 +1,6 @@
 const Connection = require('tedious').Connection;
 require('dotenv').config();
+const logger = require('../log/logger')
 
 const config = {
   server: process.env.SERVER_IP,
@@ -20,7 +21,10 @@ const config = {
 }
 const connection = new Connection(config);
 connection.on('connect', function (err) {
-  if(err) console.error('Database connection error: ',err);
-  else console.log('Connected');
+  logger.info('Conectando ao banco de dados...')
+  if(err) { 
+    logger.error('Database connection error:', err)
+  }
+  else logger.info('Conectado')
 })
 module.exports = connection;

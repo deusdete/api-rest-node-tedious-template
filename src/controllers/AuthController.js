@@ -2,6 +2,7 @@ const response = require('../shared/response');
 const dbContext = require('../db/dbContext');
 const TYPES = require('tedious').TYPES;
 const { validateLogin, validateRegistration } = require('../utils/validators');
+const logger = require('../log/logger')
 
 module.exports = {
   async login (req, res) {
@@ -26,14 +27,21 @@ module.exports = {
     const data = req.body;
     const { valid, erros } = validateRegistration(data);
 
-    if(!valid) return res.status(400).json(erros);
+    if(!valid) { 
+      logger.error(erros)
+      return res.status(400).json(erros);
+    }
 
     //As an example, this procedure uses an @json field containing the user information for registration
     const jsonData = JSON.stringify(data);
     params.push({name: 'json', type: TYPES.VarChar, val: jsonData});
   
     dbContext.post('SignupProcedure', params, (err, data) => {
-      if(err) return res.status(500).json(response(data, err));
+      if(err)  {
+        logger.error(err)
+        return res.status(500).json(response(data, err));
+      }
+      logger.info('Usuário conectado com sucesso')
       return res.json({...data[0]});
     }) 
   }
