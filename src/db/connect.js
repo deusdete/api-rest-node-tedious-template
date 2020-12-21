@@ -16,7 +16,19 @@ const config = {
     port: 10025,
     trustServerCertificate: true,
     rowCollectionOnDone: true,
-    useColumnNames: false
+    useColumnNames: false,
+    pool: { max: 10, min: 0, idleTimeoutMillis: 30000 },
+    useUTC: false,
+    language: 'portuguese',
+    datefirst:1,
+    dateFormat: 'dmy',
+    debug:{
+      packet: true,
+      data: true,
+      payload: true,
+    },
+    maxRetriesOnTransientErrors: 5,
+    requestTimeout: 300000
   }
 }
 const connection = new Connection(config);
